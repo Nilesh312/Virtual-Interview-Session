@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Hire Coach — AI Interview Practice</title>
+  <meta name="description" content="AI-powered interview preparation and coaching" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root{
+      --premium-100: #f3f6ff;
+      --premium-200: #eef2ff;
+      --premium-400: #9f7aea;
+      --premium-500: #7c3aed;
+      --premium-600: #6d28d9;
+      --premium-accent: linear-gradient(135deg,#7c3aed 0%, #06b6d4 100%);
+      --glass-bg: rgba(255,255,255,0.75);
+      --glass-border: rgba(255,255,255,0.6);
+      --muted-text: #666666;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: radial-gradient(600px 400px at 10% 10%, rgba(124,58,237,0.08), transparent 10%), radial-gradient(500px 300px at 90% 90%, rgba(6,182,212,0.06), transparent 10%), linear-gradient(180deg, #fbfbff 0%, #f3f6ff 100%);
+      color: #111827;
+      line-height: 1.6;
+      font-weight: 400;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header Navigation */
+    header {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333333;
+    }
+
+    .logo i {
+      margin-right: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: #666666;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #333333;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .login-link {
+      color: #666666;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .login-link:hover {
+      color: #333333;
+    }
+
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: #0066cc;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0052a3;
+    }
+
+    .btn-secondary {
+      background-color: #f0f0f0;
+      color: #333333;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e5e5e5;
+    }
+
+    /* Hero Section */
+    .landing-hero {
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 3.5rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: var(--glass-bg);
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(6px) saturate(120%);
+    }
+
+    .hero-content h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #333333;
+      line-height: 1.2;
+    }
+
+    .hero-content > p {
+      font-size: 1.1rem;
+      color: #666666;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat strong {
+      font-size: 1.8rem;
+      color: #333333;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat span {
+      font-size: 0.9rem;
+      color: #999999;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-large {
+      padding: 0.8rem 2rem;
+      font-size: 1.05rem;
+    }
+
+    .hero-trust {
+      font-size: 0.95rem;
+      color: #666666;
+    }
+
+    .hero-trust strong {
+      color: #333333;
+    }
+
+    .hero-visual {
+      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.04);
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .hero-mockup {
+      width: 100%;
+    }
+
+    .mockup-screen {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .mockup-header {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .mockup-dots::before,
+    .mockup-dots::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ddd;
+    }
+
+    .mockup-dots::after {
+      margin-right: 0.5rem;
+    }
+
+    .mockup-content {
+      padding: 1.5rem;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-bubble {
+      padding: 1rem;
+      border-radius: 6px;
+      max-width: 80%;
+      font-size: 0.95rem;
+    }
+
+    .chat-bubble.user {
+      background-color: #f0f0f0;
+      color: #333;
+      align-self: flex-end;
+    }
+
+    .chat-bubble.ai {
+      background-color: #e8f0ff;
+      color: #0066cc;
+      align-self: flex-start;
+    }
+
+    /* Features Section */
+    .features-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 3rem 2rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #333333;
+    }
+
+    .section-header p {
+      font-size: 1.05rem;
+      color: #666666;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .feature-card {
+      padding: 2rem;
+      background-color: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: #ccc;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      color: #0066cc;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: #333333;
+    }
+
+    .feature-card p {
+      color: #666666;
+      line-height: 1.7;
+    }
+
+    /* About Section */
+    .about-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 3rem 2rem;
+      background: rgba(255,255,255,0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-text h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #333333;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      color: #666666;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .about-stat {
+      text-align: center;
+    }
+
+    .about-stat h3 {
+      font-size: 1.8rem;
+      color: #333333;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-stat p {
+      font-size: 0.95rem;
+      color: #999999;
+      margin: 0;
+    }
+
+    .testimonial-card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .testimonial-card h3 {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: #333333;
+      font-style: italic;
+    }
+
+    .testimonial-card p {
+      color: #666666;
+      font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .landing-hero {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+      }
+
+      .hero-content h1 {
+        font-size: 1.8rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats,
+      .about-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .chat-bubble {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">
+        <i class="fas fa-brain"></i>
+        Virtual Hire Coach
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="{{ url_for('login') }}" class="login-link">Log In</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="landing-hero">
+    <div class="hero-content">
+      <h1>Master Your Next Interview with AI Coaching</h1>
+      <p>Get personalized practice sessions, real-time feedback, and actionable insights to ace your next interview.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <strong>94%</strong>
+          <span>Success Rate</span>
+        </div>
+        <div class="stat">
+          <strong>10K+</strong>
+          <span>Users</span>
+        </div>
+        <div class="stat">
+          <strong>24/7</strong>
+          <span>Support</span>
+        </div>
+      </div>
+      <div class="hero-ctas">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+          Start Your Journey
+        </a>
+        <a href="#features" class="btn btn-secondary btn-large">
+          Learn More
+        </a>
+      </div>
+      <p class="hero-trust">Trusted by professionals worldwide</p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-mockup">
+        <div class="mockup-screen">
+          <div class="mockup-header">
+            <div class="mockup-dots"></div>
+            <span>Interview Session</span>
+          </div>
+          <div class="mockup-content">
+            <div class="chat-bubble user">Tell me about yourself...</div>
+            <div class="chat-bubble ai">Great response! Your confidence score: 92%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section id="features" class="features-section">
+    <div class="section-header">
+      <h2>Our Features</h2>
+      <p>Everything you need to prepare effectively</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <h3>AI-Powered Analysis</h3>
+        <p>Get instant feedback on your answers, pacing, and content structure.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-video"></i>
+        </div>
+        <h3>Video Sessions</h3>
+        <p>Practice with video recording and analysis of your interview performance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Performance Tracking</h3>
+        <p>Monitor your progress with detailed analytics and improvement recommendations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>24/7 Availability</h3>
+        <p>Practice anytime, anywhere. Get instant feedback at your convenience.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Industry Scenarios</h3>
+        <p>Role-specific practice scenarios across various industries and positions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h3>Expert Resources</h3>
+        <p>Access guides, tips, and best practices from experienced professionals.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="about-content">
+      <div class="about-text">
+        <h2>Why Choose Us</h2>
+        <p>Virtual Hire Coach combines advanced AI technology with proven interview strategies. Whether you're preparing for your first interview or a senior position, our platform provides the guidance you need to succeed.</p>
+        <div class="about-stats">
+          <div class="about-stat">
+            <h3>1M+</h3>
+            <p>Sessions completed</p>
+          </div>
+          <div class="about-stat">
+            <h3>86%</h3>
+            <p>Improvement rate</p>
+          </div>
+          <div class="about-stat">
+            <h3>50+</h3>
+            <p>Companies trusted</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="testimonial-card">
+          <h3>"This platform helped me ace my interview and land my dream role."</h3>
+          <p><strong>— Nilesh Steven, Software Engineer</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Chat - Virtual Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header - Premium -->
+    <nav class="nav-premium" style="position: sticky; top: 0; z-index: 100;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center icon-label">
+                    <i class="fas fa-comments" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+                    <h3 style="margin: 0; color: var(--text-primary);">Interview Session</h3>
+                </div>
+                <div class="nav-user-area d-flex align-items-center" style="gap: var(--spacing-md);">
+                    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                        <i class="fas fa-moon icon-dark"></i>
+                        <i class="fas fa-sun icon-light"></i>
+                    </button>
+                    <span class="text-secondary" style="font-size: var(--font-size-sm);">
+                        <i class="fas fa-circle" style="color: var(--secondary-color); margin-right: var(--spacing-xs); font-size: 6px; vertical-align: middle;"></i>
+                        Live
+                    </span>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">
+                        <i class="fas fa-arrow-left"></i>
+                        Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container page-fit" style="padding: 2rem 1.5rem; max-width: 1200px;">
+        <!-- Interview Header -->
+        <div class="text-center mb-3">
+            <h1 style="color: var(--text-primary); margin-bottom: var(--spacing-sm); font-size: var(--font-size-3xl);">
+                <i class="fas fa-user-tie" style="color: var(--primary-color); margin-right: var(--spacing-sm);"></i>
+                HR Interview Session
+            </h1>
+            <p class="text-secondary" style="font-size: var(--font-size-base); max-width: 500px; margin: 0 auto;">
+                Answer quesupdtations using voice or text. Use the STAR method when possible for behavioral questions.
+            </p>
+        </div>
+
+        <div class="chat-grid animate-slide-up">
+
+            <!-- Chat Section -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 style="margin: 0; color: var(--text-primary);" class="icon-label">
+                            <i class="fas fa-comments"></i>
+                            Conversation
+                        </h3>
+                        <div class="d-flex align-items-center" style="gap: var(--spacing-sm);">
+                            <span class="text-secondary" style="font-size: var(--font-size-sm);">
+                                <i class="fas fa-circle" style="color: var(--secondary-color); font-size: 8px; margin-right: var(--spacing-xs);"></i>
+                                Live Chat
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body" style="padding: 0;">
+                    <!-- Chat Messages Container -->
+                    <div class="chat-messages" id="chatBox">
+                        {% for message in conversation_history %}
+                            {% if message.role == 'user' %}
+                                <div class="chat-message user">
+                                    <div class="chat-message-content">
+                                        <div class="chat-message-text">{{ message.content }}</div>
+                                        <div class="chat-message-time icon-label">
+                                            <i class="fas fa-user"></i>
+                                            <span>You</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% elif message.role == 'assistant' %}
+                                <div class="chat-message interviewer">
+                                    <div class="chat-message-content">
+                                        <div class="chat-message-text">{{ message.content }}</div>
+                                        <div class="chat-message-time icon-label">
+                                            <i class="fas fa-user-tie"></i>
+                                            <span>Interviewer</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Input Section -->
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="answerInput" class="chat-input"
+                                   placeholder="Type your answer or use voice input..." required>
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <button type="button" id="voiceBtn" class="chat-voice-btn" aria-label="Voice input">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <button type="button" id="recordBtn" class="chat-record-btn" title="Start recording (webm)">● Record</button>
+                                <button type="button" id="stopRecordBtn" class="chat-stop-btn" title="Stop recording" disabled>■ Stop</button>
+                                <button type="button" onclick="sendAnswer()" class="chat-send-btn" aria-label="Send message">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="cameraUploadStatus" class="chat-status"></div>
+                        <div id="statusText" class="chat-status"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facial Detection & Controls Section -->
+            <div class="chat-sidebar" style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+
+                <!-- Facial Detection Card -->
+                <div class="card">
+                    <div class="card-header text-center" style="padding: var(--spacing-md);">
+                        <h4 style="margin: 0; color: var(--text-primary); font-size: var(--font-size-lg);">
+                            <i class="fas fa-video" style="margin-right: var(--spacing-sm);"></i>
+                            Camera
+                        </h4>
+                    </div>
+
+                    <div class="card-body text-center" style="padding: var(--spacing-md);">
+                        <div class="face-display-container facial-detection-container">
+                            <div class="face-display-video-wrapper">
+                                <video id="videoElement" autoplay muted playsinline webkit-playsinline class="face-display-video"></video>
+                                <canvas id="detectionCanvas" class="face-display-canvas"></canvas>
+                                <div class="face-display-loading" id="cameraLoading">
+                                    <div class="face-display-loading-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div class="face-display-loading-text">
+                                        <p>Camera access required for facial detection</p>
+                                        <p class="face-display-loading-subtitle">Click "Enable Camera" to start</p>
+                                        <p class="face-display-loading-subtitle" style="font-size:0.85em; color:var(--text-muted);">
+                                            We'll also monitor your facial expression during the interview to give emotion-based feedback.
+                                        </p>
+                                        <button id="enableCameraBtn" class="btn btn-primary btn-sm" style="margin-top: var(--spacing-sm);">
+                                            <i class="fas fa-video"></i>
+                                            Enable Camera
+                                        </button>
+                                        <!-- will display any error messages (permission denied, no device, etc.) -->
+                                        <p id="cameraErrorMsg" class="face-display-loading-error"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="face-display-status" id="facialStatus">
+                                <i class="fas fa-clock"></i>
+                                Waiting for camera...
+                            </div>
+                            <!-- Emotion recognition status -->
+                            <div class="face-display-status" id="emotionStatus">
+                                😐 Neutral
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Controls Card -->
+                <div class="card">
+                    <div class="card-header" style="padding: var(--spacing-md);">
+                        <h4 style="margin: 0; color: var(--text-primary); font-size: var(--font-size-lg);">
+                            <i class="fas fa-cogs" style="margin-right: var(--spacing-sm);"></i>
+                            Controls
+                        </h4>
+                    </div>
+
+                    <div class="card-body" style="padding: var(--spacing-md);">
+                        <div style="display: grid; gap: var(--spacing-sm);">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-block btn-sm">
+                                <i class="fas fa-arrow-left" style="margin-right: var(--spacing-sm);"></i>
+                                Dashboard
+                            </a>
+
+                            <a href="{{ url_for('end_interview') }}"
+                               onclick="return confirm('Are you sure you want to end the interview? You will be able to review your performance.')"
+                               class="btn btn-danger btn-block btn-sm">
+                                <i class="fas fa-stop-circle" style="margin-right: var(--spacing-sm);"></i>
+                                End Interview
+                            </a>
+                        </div>
+
+                        <div style="margin-top: var(--spacing-md); padding: var(--spacing-sm); background: var(--bg-secondary); border-radius: var(--radius-md);">
+                            <h5 style="margin: 0 0 var(--spacing-sm) 0; color: var(--text-primary); font-size: var(--font-size-sm);">
+                                <i class="fas fa-lightbulb" style="margin-right: var(--spacing-sm);"></i>
+                                Tips
+                            </h5>
+                            <ul style="margin: 0; padding-left: var(--spacing-lg); font-size: var(--font-size-xs); color: var(--text-secondary); line-height: 1.4;">
+                                <li>Use the STAR method</li>
+                                <li>Speak clearly</li>
+                                <li>Take your time</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera and facial detection removed: simplified UI -->
+
+    <script>
+        // ================================
+        // CAMERA & FACIAL DETECTION SETUP
+        // ================================
+        let videoElement = null;
+        let detectionCanvas = null;
+        let stream = null;
+        let isCameraActive = false;
+        let faceDetectionInterval = null;
+
+        // Function to setup camera button listener
+        function setupCameraListener() {
+            const enableCameraBtn = document.getElementById('enableCameraBtn');
+            if (enableCameraBtn && !enableCameraBtn.dataset.listenerAttached) {
+                enableCameraBtn.addEventListener('click', enableCamera);
+                enableCameraBtn.dataset.listenerAttached = 'true';
+            }
+        }
+
+        // Initialize camera functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            videoElement = document.getElementById('videoElement');
+            detectionCanvas = document.getElementById('detectionCanvas');
+            setupCameraListener();
+
+            // try to open camera automatically; will prompt permission or fail silently
+            setTimeout(() => {
+                if (!isCameraActive) {
+                    enableCamera().catch(err => console.warn('Auto camera init failed', err));
+                }
+            }, 1000);
+        });
+
+        // Fallback initialization in case DOMContentLoaded fires too early
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCameraListener);
+        } else {
+            setupCameraListener();
+        }
+
+        async function enableCamera() {
+            const enableBtn = document.getElementById('enableCameraBtn');
+            const loadingDiv = document.getElementById('cameraLoading');
+            const statusDiv = document.getElementById('facialStatus');
+            const errorMsgEl = document.getElementById('cameraErrorMsg');
+
+            // clear any previous error message when user retries
+            if (errorMsgEl) {
+                errorMsgEl.textContent = '';
+            }
+
+            try {
+                // Ensure video element exists
+                if (!videoElement) {
+                    videoElement = document.getElementById('videoElement');
+                    if (!videoElement) {
+                        throw new Error('Video element not found');
+                    }
+                }
+
+                if (!detectionCanvas) {
+                    detectionCanvas = document.getElementById('detectionCanvas');
+                    if (!detectionCanvas) {
+                        throw new Error('Detection canvas not found');
+                    }
+                }
+
+                // Request camera access
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: 'user'
+                    },
+                    audio: false
+                });
+
+                // Set up video element
+                videoElement.srcObject = stream;
+                videoElement.onloadedmetadata = function() {
+                    videoElement.play();
+                };
+                videoElement.style.display = 'block';
+
+                // Hide loading and show video
+                if (loadingDiv) {
+                    loadingDiv.style.display = 'none';
+                }
+                
+                if (statusDiv) {
+                    statusDiv.innerHTML = '<i class="fas fa-video"></i> Camera active';
+                    statusDiv.style.color = 'var(--success-color)';
+                }
+
+                isCameraActive = true;
+
+                // Start facial detection
+                setTimeout(() => {
+                    startFacialDetection();
+                }, 500);
+
+                // remove any error class once we succeed
+                const container = document.querySelector('.facial-detection-container');
+                if (container) {
+                    container.classList.remove('face-not-detected');
+                }
+
+                updateStatus('<i class="fas fa-video" style="margin-right: var(--spacing-xs); color: var(--success-color);"></i> 📹 Camera enabled! Facial detection active.');
+
+            } catch (error) {
+                console.error('Camera access error:', error);
+                let errorMessage = 'Camera access failed';
+
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = 'Camera permission denied. Please allow camera access.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = 'No camera found on this device.';
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = 'Camera is already in use by another application.';
+                } else if (error.name === 'TypeError') {
+                    errorMessage = 'Camera API not supported in this browser.';
+                }
+
+                if (statusDiv) {
+                    statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`;
+                    statusDiv.style.color = 'var(--danger-color)';
+                }
+
+                // highlight container border so user immediately sees issue
+                const container = document.querySelector('.facial-detection-container');
+                if (container) {
+                    container.classList.remove('face-detected');
+                    container.classList.add('face-not-detected');
+                }
+
+                // keep error overlay visible and show message
+                if (loadingDiv) {
+                    loadingDiv.style.display = 'flex';
+                }
+                if (errorMsgEl) {
+                    errorMsgEl.textContent = errorMessage;
+                }
+
+                // allow retry
+                if (enableBtn) {
+                    enableBtn.disabled = false;
+                    enableBtn.innerHTML = '<i class="fas fa-video"></i> Retry';
+                }
+
+                updateStatus(`<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs); color: var(--danger-color);"></i> ${errorMessage}`, 'error');
+            }
+        }
+
+        function startFacialDetection() {
+            if (!isCameraActive || !videoElement || !detectionCanvas) return;
+
+            const canvas = detectionCanvas;
+            const ctx = canvas.getContext('2d');
+            const video = videoElement;
+
+            // set default state to no face (red border) until we detect one
+            const container = document.querySelector('.facial-detection-container');
+            if (container) {
+                container.classList.remove('face-detected');
+                container.classList.add('face-not-detected');
+            }
+
+            // Wait for video metadata to load if not already loaded
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                video.onloadedmetadata = function() {
+                    canvas.width = video.videoWidth || 640;
+                    canvas.height = video.videoHeight || 480;
+                };
+                return;
+            }
+
+            // Set canvas size to match video
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+
+            // Simple face detection simulation (in a real implementation, you'd use face-api.js or similar)
+            faceDetectionInterval = setInterval(() => {
+                if (!isCameraActive || !video || !ctx) return;
+
+                try {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw video frame to canvas for processing
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Get image data for face detection
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const faceDetected = detectFaceSimple(imageData);
+
+                    const container = document.querySelector('.facial-detection-container');
+
+                    if (faceDetected) {
+                        container.classList.remove('face-not-detected');
+                        container.classList.add('face-detected');
+                        document.getElementById('facialStatus').innerHTML = '<i class="fas fa-check-circle"></i> Face detected';
+                        document.getElementById('facialStatus').style.color = 'var(--success-color)';
+                    } else {
+                        container.classList.remove('face-detected');
+                        container.classList.add('face-not-detected');
+                        document.getElementById('facialStatus').innerHTML = '<i class="fas fa-exclamation-triangle"></i> No face detected';
+                        document.getElementById('facialStatus').style.color = 'var(--danger-color)';
+                    }
+                } catch (err) {
+                    console.error('Face detection error:', err);
+                }
+            }, 500); // Check every 500ms
+        }
+
+        function detectFaceSimple(imageData) {
+            // Simple face detection based on skin tone detection
+            // This is a basic implementation - in production, use proper face detection library
+            const data = imageData.data;
+            let skinPixels = 0;
+            let totalPixels = 0;
+
+            // Sample pixels in center area
+            const centerX = Math.floor(imageData.width / 2);
+            const centerY = Math.floor(imageData.height / 2);
+            const sampleSize = 100;
+
+            for (let y = centerY - sampleSize; y < centerY + sampleSize; y++) {
+                for (let x = centerX - sampleSize; x < centerX + sampleSize; x++) {
+                    if (x >= 0 && x < imageData.width && y >= 0 && y < imageData.height) {
+                        const index = (y * imageData.width + x) * 4;
+                        const r = data[index];
+                        const g = data[index + 1];
+                        const b = data[index + 2];
+
+                        // Simple skin tone detection (rough approximation)
+                        if (r > 60 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15) {
+                            skinPixels++;
+                        }
+                        totalPixels++;
+                    }
+                }
+            }
+
+            const skinRatio = skinPixels / totalPixels;
+            return skinRatio > 0.05; // Threshold for face detection
+        }
+
+        // --------------------------
+        // Emotion recognition logic
+        // --------------------------
+        let currentEmotion = 'neutral';
+        let emotionHistory = [];
+        
+        function updateEmotion(imageData) {
+            if (!imageData) return;
+            const data = imageData.data;
+            const {width, height} = imageData;
+            let totalLum = 0;
+            let count = 0;
+
+            // sample lower half (mouth/chin area) every 4th pixel to reduce load
+            for (let y = Math.floor(height * 0.5); y < height; y += 4) {
+                for (let x = 0; x < width; x += 4) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+                    totalLum += lum;
+                    count++;
+                }
+            }
+            const avgLum = totalLum / count;
+
+            // compare with previous luminance to detect movement/nervousness
+            if (window.prevLum !== undefined) {
+                const diff = Math.abs(avgLum - window.prevLum);
+                if (diff > 20) {
+                    currentEmotion = 'nervous';
+                } else if (avgLum > 120) {
+                    currentEmotion = 'confident';
+                } else {
+                    currentEmotion = 'neutral';
+                }
+            }
+            window.prevLum = avgLum;
+
+            emotionHistory.push(currentEmotion);
+            if (emotionHistory.length > 50) emotionHistory.shift();
+
+            const emotionEl = document.getElementById('emotionStatus');
+            if (emotionEl) {
+                let emoji = '😐';
+                if (currentEmotion === 'nervous') emoji = '😬';
+                else if (currentEmotion === 'confident') emoji = '😎';
+                emotionEl.textContent = `${emoji} ${currentEmotion.charAt(0).toUpperCase() + currentEmotion.slice(1)}`;
+            }
+        }
+
+        // Clean up camera when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (faceDetectionInterval) {
+                clearInterval(faceDetectionInterval);
+            }
+        });
+
+        // ================================
+        // VOICE RECOGNITION & CHAT SETUP
+        // ================================
+        // Browser API support check
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechSynthesis = window.speechSynthesis;
+        const voiceBtn = document.getElementById('voiceBtn');
+        let isListening = false;
+        let recognizer = null;
+
+        if (SpeechRecognition) {
+            recognizer = new SpeechRecognition();
+            recognizer.continuous = false;
+            recognizer.interimResults = true;
+            recognizer.lang = 'en-US';
+            recognizer.maxAlternatives = 1;
+
+            recognizer.onstart = function() {
+                isListening = true;
+                voiceBtn.classList.add('listening');
+                voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+                voiceBtn.style.background = 'var(--danger-color)';
+                updateStatus('<i class="fas fa-microphone" style="margin-right: var(--spacing-xs); color: var(--danger-color);"></i> 🎤 Listening... Speak clearly and confidently');
+            };
+
+            recognizer.onresult = function(event) {
+                let finalTranscript = '';
+                let interimTranscript = '';
+                let hasFinalResult = false;
+
+                // Process all results
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                        hasFinalResult = true;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                // Show interim results in real-time
+                if (interimTranscript && !hasFinalResult) {
+                    document.getElementById('answerInput').value = interimTranscript;
+                    document.getElementById('answerInput').style.color = 'var(--text-muted)';
+                    updateStatus('<i class="fas fa-circle" style="margin-right: var(--spacing-xs); color: var(--secondary-color); animation: pulse 1s infinite;"></i> 🔄 Processing your speech...');
+                }
+
+                // Use final result
+                if (hasFinalResult && finalTranscript.trim()) {
+                    document.getElementById('answerInput').value = finalTranscript.trim();
+                    document.getElementById('answerInput').style.color = 'var(--text-primary)';
+                    updateStatus('<i class="fas fa-check" style="margin-right: var(--spacing-xs); color: var(--success-color);"></i> ✅ Voice captured clearly! Ready to send or edit.');
+                }
+            };
+
+            recognizer.onerror = function(event) {
+                let errorMessage = 'Voice recognition error';
+                if (event.error === 'network') {
+                    errorMessage = '📡 Network error - Check your internet connection';
+                } else if (event.error === 'no-speech') {
+                    errorMessage = '🔇 No speech detected - Please speak louder or closer to microphone';
+                } else if (event.error === 'audio-capture') {
+                    errorMessage = '🎙️ Microphone access denied - Please allow microphone access';
+                } else if (event.error === 'not-allowed') {
+                    errorMessage = '🚫 Microphone permission denied - Enable microphone in browser settings';
+                } else if (event.error === 'service-not-allowed') {
+                    errorMessage = '🔒 Speech recognition service unavailable';
+                }
+                updateStatus(`<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs); color: var(--danger-color);"></i> ${errorMessage}`, 'error');
+                resetVoiceButton();
+            };
+
+            recognizer.onend = function() {
+                resetVoiceButton();
+                const inputValue = document.getElementById('answerInput').value.trim();
+                if (inputValue) {
+                    // Check if we got a final result
+                    if (document.getElementById('answerInput').style.color === 'rgb(248, 250, 252)') { // dark theme primary
+                        updateStatus('<i class="fas fa-check-circle" style="margin-right: var(--spacing-xs); color: var(--success-color);"></i> 🎯 Voice input complete! Click send when ready.');
+                    } else {
+                        updateStatus('<i class="fas fa-info-circle" style="margin-right: var(--spacing-xs); color: var(--accent-color);"></i> ℹ️ Voice input ready - you can edit or send now.');
+                    }
+                } else {
+                    updateStatus('<i class="fas fa-microphone-slash" style="margin-right: var(--spacing-xs); color: var(--text-muted);"></i> No speech detected. Try again.');
+                }
+            };
+
+            voiceBtn.addEventListener('click', function() {
+                if (isListening) {
+                    recognizer.stop();
+                    updateStatus('<i class="fas fa-stop" style="margin-right: var(--spacing-xs); color: var(--accent-color);"></i> 🛑 Stopped listening');
+                } else {
+                    // Clear previous input and reset styling
+                    document.getElementById('answerInput').value = '';
+                    document.getElementById('answerInput').style.color = 'var(--text-primary)';
+                    document.getElementById('answerInput').focus();
+                    updateStatus('<i class="fas fa-microphone" style="margin-right: var(--spacing-xs); color: var(--secondary-color);"></i> 🎤 Starting voice recognition...');
+                    recognizer.start();
+                }
+            });
+        } else {
+            voiceBtn.disabled = true;
+            voiceBtn.innerHTML = '<i class="fas fa-ban"></i>';
+            voiceBtn.style.opacity = '0.5';
+            updateStatus('<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i> Voice recognition not supported in this browser', 'warning');
+        }
+
+        function resetVoiceButton() {
+            isListening = false;
+            voiceBtn.classList.remove('listening');
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            voiceBtn.style.background = '';
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusText');
+            if (message) {
+                statusEl.innerHTML = message;
+                statusEl.style.color = type === 'error' ? 'var(--danger-color)' :
+                                     type === 'warning' ? 'var(--accent-color)' :
+                                     'var(--text-secondary)';
+            } else {
+                statusEl.innerHTML = '';
+            }
+        }
+
+        function speakResponse(text) {
+            if (!SpeechSynthesis) {
+                console.log('Text-to-speech not supported');
+                return;
+            }
+
+            // Cancel any ongoing speech
+            SpeechSynthesis.cancel();
+
+            // Remove markdown-like formatting
+            let cleanText = text
+                .replace(/\*\*/g, '')
+                .replace(/\*/g, '')
+                .replace(/\n/g, ' ');
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            utterance.onstart = function() {
+                updateStatus('<i class="fas fa-volume-up" style="margin-right: var(--spacing-xs);"></i> AI is speaking...');
+            };
+
+            utterance.onend = function() {
+                updateStatus('');
+            };
+
+            utterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+            };
+
+            SpeechSynthesis.speak(utterance);
+        }
+
+        async function sendAnswer() {
+            const answer = document.getElementById('answerInput').value.trim();
+
+            if (!answer) {
+                updateStatus('<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i> Please enter an answer', 'error');
+                return;
+            }
+
+            const sendBtn = document.querySelector('button[onclick="sendAnswer()"]');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            updateStatus('<i class="fas fa-brain" style="margin-right: var(--spacing-xs); color: var(--secondary-color);"></i> 🤖 AI is analyzing your answer...');
+
+            try {
+                const response = await fetch('/answer', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({answer: answer, emotion: currentEmotion})
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    const errorMsg = error.error || 'Failed to process answer';
+
+                    const chatBox = document.getElementById('chatBox');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message';
+                    errorDiv.style.borderLeftColor = 'var(--danger-color)';
+                    errorDiv.style.backgroundColor = 'rgb(239 68 68 / 0.05)';
+
+                    // Check if it's an API key error
+                    if (errorMsg.includes('OPENAI_API_KEY') || errorMsg.includes('Authentication') || errorMsg.includes('Invalid')) {
+                        errorDiv.innerHTML = `
+                            <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                                <div style="background: var(--danger-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--danger-color); margin-bottom: var(--spacing-xs);">API Configuration Error</div>
+                                    <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(errorMsg)}</div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--text-muted); margin-top: var(--spacing-sm);">Please ensure your OpenAI API key is configured correctly.</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        errorDiv.innerHTML = `
+                            <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                                <div style="background: var(--danger-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--danger-color); margin-bottom: var(--spacing-xs);">Error</div>
+                                    <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(errorMsg)}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    chatBox.appendChild(errorDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+
+                    updateStatus(`<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i> ${errorMsg.includes('OPENAI_API_KEY') ? 'API Key Error - Check configuration' : 'Error occurred. Please try again.'}`, 'error');
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = originalText;
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Check if feedback contains error message
+                if (data.ai_feedback && data.ai_feedback.includes('Error:')) {
+                    const chatBox = document.getElementById('chatBox');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message';
+                    errorDiv.style.borderLeftColor = 'var(--danger-color)';
+                    errorDiv.style.backgroundColor = 'rgb(239 68 68 / 0.05)';
+
+                    if (data.ai_feedback.includes('OPENAI_API_KEY') || data.ai_feedback.includes('Authentication')) {
+                        errorDiv.innerHTML = `
+                            <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                                <div style="background: var(--danger-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--danger-color); margin-bottom: var(--spacing-xs);">API Configuration Error</div>
+                                    <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(data.ai_feedback)}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        errorDiv.innerHTML = `
+                            <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                                <div style="background: var(--danger-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--danger-color); margin-bottom: var(--spacing-xs);">System Error</div>
+                                    <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(data.ai_feedback)}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    chatBox.appendChild(errorDiv);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    updateStatus('<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i> Error occurred. Please try again.', 'error');
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = originalText;
+                    return;
+                }
+
+                // Add user message to chat
+                const chatBox = document.getElementById('chatBox');
+
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user-message';
+                userMessage.innerHTML = `
+                    <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                        <div style="background: var(--primary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-xs);">You</div>
+                            <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(answer)}</div>
+                        </div>
+                    </div>
+                `;
+                // show emotion if known
+                if (currentEmotion) {
+                    const emoDiv = document.createElement('div');
+                    emoDiv.style.fontSize = '0.85em';
+                    emoDiv.style.color = 'var(--text-secondary)';
+                    emoDiv.style.marginTop = '4px';
+                    emoDiv.textContent = `Emotion: ${currentEmotion.charAt(0).toUpperCase() + currentEmotion.slice(1)}`;
+                    userMessage.appendChild(emoDiv);
+                }
+                chatBox.appendChild(userMessage);
+
+                // Add next question from assistant
+                const nextQuestion = document.createElement('div');
+                nextQuestion.className = 'message assistant-message';
+                nextQuestion.innerHTML = `
+                    <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                        <div style="background: var(--secondary-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-xs);">Interviewer</div>
+                            <div style="color: var(--text-secondary); line-height: 1.5;">${escapeHtml(data.next_question)}</div>
+                        </div>
+                    </div>
+                `;
+                chatBox.appendChild(nextQuestion);
+
+                // Scroll to bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Speak the response
+                updateStatus('<i class="fas fa-volume-up" style="margin-right: var(--spacing-xs); color: var(--secondary-color);"></i> 🔊 AI is speaking the next question...');
+                speakResponse(data.next_question);
+
+                // Clear input
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = originalText;
+                updateStatus('<i class="fas fa-check-circle" style="margin-right: var(--spacing-xs); color: var(--success-color);"></i> ✅ Answer processed! Listen to the next question and respond.');
+            } catch (error) {
+                console.error('Error:', error);
+
+                const chatBox = document.getElementById('chatBox');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message';
+                errorDiv.style.borderLeftColor = 'var(--danger-color)';
+                errorDiv.style.backgroundColor = 'rgb(239 68 68 / 0.05)';
+                errorDiv.innerHTML = `
+                    <div class="d-flex align-items-start" style="gap: var(--spacing-sm);">
+                        <div style="background: var(--danger-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--danger-color); margin-bottom: var(--spacing-xs);">Network Error</div>
+                            <div style="color: var(--text-secondary); line-height: 1.5;">Please check your connection and try again.</div>
+                        </div>
+                    </div>
+                `;
+                chatBox.appendChild(errorDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                updateStatus('<i class="fas fa-exclamation-triangle" style="margin-right: var(--spacing-xs);"></i> Network error. Please try again.', 'error');
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = originalText;
+                }
+            }
+
+        // Media recording removed: recording/upload UI disabled
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Allow Enter key to send
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                sendAnswer();
+            }
+        });
+
+        // Scroll to bottom on load and speak welcome message
+        window.addEventListener('load', function() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.scrollTop = chatBox.scrollHeight;
+            document.getElementById('answerInput').focus();
+            
+            // Speak the first message if it's a welcome message
+            const firstMessage = chatBox.querySelector('.interviewer .chat-message-text');
+            if (firstMessage && firstMessage.textContent.includes('Welcome to your virtual interview')) {
+                setTimeout(() => {
+                    speakResponse(firstMessage.textContent);
+                }, 1000); // Delay to ensure speech synthesis is ready
+            }
+        });
+    </script>
+
+    <style>
+        /* Additional chat-specific styles */
+        .user-message {
+            background: rgb(37 99 235 / 0.05);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .assistant-message {
+            background: rgb(16 185 129 / 0.05);
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        /* Medium-size camera frame */
+        .facial-detection-container,
+        .face-display-container.facial-detection-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 240px;
+            margin: 0 auto;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-normal);
+            background: var(--bg-tertiary);
+            box-shadow: var(--shadow-lg);
+        }
+        .face-display-video-wrapper {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .face-display-video,
+        .face-display-video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .face-display-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .listening {
+            animation: pulse 1s infinite;
+            background: var(--danger-color) !important;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Interim voice input styling */
+        #answerInput {
+            transition: color 0.2s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .container > div {
+                grid-template-columns: 1fr !important;
+            }
+
+            .facial-detection-container {
+                max-height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md) 0;
+            }
+
+            .card-body {
+                padding: var(--spacing-md);
+            }
+
+            .chat-messages {
+                max-height: 400px;
+            }
+        }
+    </style>
+
+    <script>
+        // Theme toggle functionality
+        (function() {
+            var storageKey = 'virtual-interview-theme';
+            var toggle = document.getElementById('themeToggle');
+            var root = document.documentElement;
+
+            function getTheme() {
+                try {
+                    var stored = localStorage.getItem(storageKey);
+                    if (stored) return stored;
+                } catch (e) {}
+                return 'dark'; // Default to dark theme
+            }
+
+            function setTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                try { localStorage.setItem(storageKey, theme); } catch (e) {}
+                if (toggle) {
+                    toggle.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+                }
+            }
+
+            // Initialize theme
+            setTheme(getTheme());
+
+            // Toggle theme on button click
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    setTheme(next);
+                });
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Analytics - Virtual Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header - Premium -->
+    <nav class="nav-premium" style="position: sticky; top: 0; z-index: 100;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-chart-line" style="font-size: 1.5rem; color: var(--primary-color); margin-right: var(--spacing-sm);"></i>
+                    <h3 style="margin: 0; color: var(--text-primary);">Progress Analytics</h3>
+                </div>
+                <div class="nav-user-area d-flex align-items-center" style="gap: var(--spacing-md);">
+                    <div class="nav-user-badge" title="{{ session.get('username', 'User') }}">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="nav-username">{{ session.get('username', 'User') }}</span>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">
+                        <i class="fas fa-arrow-left"></i>
+                        Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container progress-panel">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">
+                <i class="fas fa-chart-bar" style="color: var(--primary-color); margin-right: var(--spacing-sm);"></i>
+                Your Progress Overview
+            </h1>
+            <p class="text-secondary" style="font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
+                Track your interview preparation journey and see how you're improving over time.
+            </p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check" style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: var(--spacing-md);"></i>
+                    <h2 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">{{ progress_data.total_sessions }}</h2>
+                        <p style="color: var(--text-secondary); margin: 0;">Interview Sessions</p>
+                </div>
+            </div>
+
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-upload" style="font-size: 2.5rem; color: var(--secondary-color); margin-bottom: var(--spacing-md);"></i>
+                    <h2 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">{{ progress_data.total_uploads }}</h2>
+                        <p style="color: var(--text-secondary); margin: 0;">Resume + Certificate Uploads</p>
+                    {% if progress_data.certificate_count > 0 %}
+                    <small style="color: var(--text-secondary);">({{ progress_data.certificate_count }} certificates)</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-star" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: var(--spacing-md);"></i>
+                    <h2 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">{{ '%.1f' % progress_data.average_score }}</h2>
+                        <p style="color: var(--text-secondary); margin: 0;">Average Score</p>
+                </div>
+            </div>
+
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-{{ 'arrow-up' if progress_data.improvement_trend == 'up' else 'arrow-down' if progress_data.improvement_trend == 'down' else 'arrow-right' }}" style="font-size: 2.5rem; color: {{ 'var(--success-color)' if progress_data.improvement_trend == 'up' else 'var(--danger-color)' if progress_data.improvement_trend == 'down' else 'var(--text-secondary)' }}; margin-bottom: var(--spacing-md);"></i>
+                    <h2 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">
+                        {% if progress_data.improvement_trend == 'up' %}
+                            Improving
+                        {% elif progress_data.improvement_trend == 'down' %}
+                            Declining
+                        {% else %}
+                            Stable
+                        {% endif %}
+                    </h2>
+                        <p style="color: var(--text-secondary); margin: 0;">Trend</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Practiced -->
+        <div class="card" style="margin-bottom: var(--spacing-3xl);">
+            <div class="card-header">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <i class="fas fa-brain" style="color: var(--primary-color);"></i>
+                    Skills Practiced
+                </h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md);">
+                    {% for skill in progress_data.skills_practiced %}
+                        <span class="skill-pill">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <i class="fas fa-history" style="color: var(--primary-color);"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                    {% for activity in progress_data.recent_activity %}
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: {{ 'var(--primary-gradient)' if activity.type == 'Interview Session' else 'var(--secondary-gradient)' }};">
+                                <i class="fas fa-{{ 'comments' if activity.type == 'Interview Session' else 'file-alt' }}"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0; font-size: var(--font-size-base); color: var(--text-primary);">{{ activity.type }}</h4>
+                                <p style="margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary);">{{ activity.date }}</p>
+                            </div>
+                            {% if activity.score is not none %}
+                                <span class="badge-success">{{ '%.1f' % activity.score }}</span>
+                            {% else %}
+                                <span class="badge-muted">Completed</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
