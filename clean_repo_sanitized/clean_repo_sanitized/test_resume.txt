@@ -1,0 +1,15 @@
+John Doe
+Software Developer
+
+Experience:
+- 3 years of Python development
+- Web application development with Flask
+- Database design with SQLAlchemy
+
+Skills:
+- Python, JavaScript, HTML, CSS
+- Flask, React, PostgreSQL
+- Git, Docker, AWS
+
+Education:
+- Bachelor's in Computer Science

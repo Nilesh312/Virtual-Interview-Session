@@ -1,0 +1,8 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e2e8f0" />
+  <!-- simple video camera icon -->
+  <rect x="120" y="90" width="160" height="120" rx="10" fill="#fff" stroke="#475569" stroke-width="2" />
+  <circle cx="200" cy="150" r="20" fill="#475569" />
+  <polygon points="280,110 320,130 280,150" fill="#475569" />
+  <text x="200" y="260" font-family="Arial" font-size="18" fill="#475569" text-anchor="middle">Interview graphic</text>
+</svg>

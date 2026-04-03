@@ -1,0 +1,630 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Hire Coach — AI Interview Practice</title>
+  <meta name="description" content="AI-powered interview preparation and coaching" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root{
+      --bg-dark-900: #061022;
+      --bg-dark-800: #0b2a45;
+      --accent-gold: #d4af37;
+      --accent-gold-600: #b38722;
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #7c3aed 60%);
+      --glass-bg: rgba(255,255,255,0.03);
+      --card-bg: rgba(255,255,255,0.02);
+      --muted-text: rgba(230,238,246,0.78);
+      --card-border: rgba(255,255,255,0.04);
+      --panel-bg: rgba(255,255,255,0.02);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: radial-gradient(900px 500px at 10% 10%, rgba(212,175,55,0.045), transparent 12%), radial-gradient(600px 360px at 85% 80%, rgba(124,58,237,0.03), transparent 10%), linear-gradient(180deg, var(--bg-dark-900) 0%, var(--bg-dark-800) 100%);
+      color: rgba(230,238,246,0.98);
+      line-height: 1.6;
+      font-weight: 400;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header Navigation */
+    header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 1.25rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .logo i {
+      margin-right: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: rgba(230,238,246,0.88);
+      font-weight: 600;
+      transition: color 0.2s ease;
+      letter-spacing: 0.1px;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .login-link {
+      color: var(--muted-text);
+      font-weight: 600;
+    }
+
+    .login-link:hover { color: white; }
+
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #071428;
+      box-shadow: 0 8px 22px rgba(115,58,196,0.12);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.98) saturate(1.05);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted-text);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .btn-secondary:hover {
+      color: white;
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    /* Hero Section */
+    .landing-hero {
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 3.5rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 40px rgba(2,6,23,0.5);
+      backdrop-filter: blur(6px) saturate(120%);
+    }
+
+    .hero-content h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: white;
+      line-height: 1.12;
+      letter-spacing: -0.3px;
+      text-shadow: 0 6px 30px rgba(7,20,34,0.6);
+    }
+
+    .hero-content > p {
+      font-size: 1.05rem;
+      color: rgba(230,238,246,0.88);
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+
+    .hero-stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.03);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.03);
+      min-width: 110px;
+      text-align: left;
+    }
+
+    .stat strong {
+      font-size: 1.2rem;
+      color: white;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat span {
+      font-size: 0.85rem;
+      color: var(--muted-text);
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-large {
+      padding: 0.8rem 2rem;
+      font-size: 1.05rem;
+    }
+
+    .hero-trust {
+      font-size: 0.95rem;
+      color: var(--muted-text);
+    }
+
+    .hero-trust strong { color: white; }
+
+    .hero-visual {
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.02);
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(2,6,23,0.7);
+    }
+
+    .hero-mockup {
+      width: 100%;
+    }
+
+    .mockup-screen {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(2,6,23,0.45);
+      overflow: hidden;
+    }
+
+    .mockup-header {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-weight: 600;
+      color: rgba(230,238,246,0.86);
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .mockup-dots::before,
+    .mockup-dots::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ddd;
+    }
+
+    .mockup-dots::after {
+      margin-right: 0.5rem;
+    }
+
+    .mockup-content {
+      padding: 1.5rem;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-bubble {
+      padding: 1rem;
+      border-radius: 6px;
+      max-width: 80%;
+      font-size: 0.95rem;
+    }
+
+    .chat-bubble.user {
+      background: rgba(255,255,255,0.04);
+      color: rgba(230,238,246,0.9);
+      align-self: flex-end;
+    }
+
+    .chat-bubble.ai {
+      background: linear-gradient(90deg, rgba(124,58,237,0.06), rgba(6,182,212,0.04));
+      color: white;
+      align-self: flex-start;
+    }
+
+    /* Features Section */
+    .features-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 3rem 2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.02);
+      box-shadow: 0 12px 40px rgba(2,6,23,0.5);
+      color: white;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .section-header p {
+      font-size: 1.05rem;
+      color: var(--muted-text);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .feature-card {
+      padding: 2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 10px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      color: rgba(230,238,246,0.95);
+    }
+
+    .feature-card:hover {
+      border-color: #ccc;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    .feature-card p {
+      color: rgba(230,238,246,0.88);
+      line-height: 1.7;
+    }
+
+    /* About Section */
+    .about-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 3rem 2rem;
+      background: transparent;
+      border-radius: 12px;
+    }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .about-text h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      color: var(--muted-text);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .about-stat {
+      text-align: center;
+    }
+
+    .about-stat h3 {
+      font-size: 1.8rem;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-stat p {
+      font-size: 0.95rem;
+      color: var(--muted-text);
+      margin: 0;
+    }
+
+    .testimonial-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 2rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 30px rgba(2,6,23,0.45);
+      color: rgba(230,238,246,0.95);
+    }
+
+    .testimonial-card h3 {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: white;
+      font-style: italic;
+    }
+
+    .testimonial-card p {
+      color: rgba(230,238,246,0.95);
+      font-size: 0.95rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .landing-hero {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem;
+      }
+
+      .hero-content h1 {
+        font-size: 1.8rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats,
+      .about-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .chat-bubble {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-nav">
+    <div class="nav-inner">
+      <a href="/" class="logo">
+        <i class="fas fa-brain"></i>
+        Virtual Hire Coach
+      </a>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="{{ url_for('login') }}" class="login-link">Log In</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="landing-hero">
+    <div class="hero-content">
+      <h1>Premium AI Coaching for Confident Interviews</h1>
+      <p>Deliver concise, confident answers. Practice with realistic scenarios, get AI-driven feedback, and improve measurable outcomes.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <strong>10K+</strong>
+          <span>Active Users</span>
+        </div>
+        <div class="stat">
+          <strong>1M+</strong>
+          <span>Sessions Completed</span>
+        </div>
+        <div class="stat">
+          <strong>94%</strong>
+          <span>Average Success Rate</span>
+        </div>
+      </div>
+      <div class="hero-ctas">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+          Get Started — Free Trial
+        </a>
+        <a href="#features" class="btn btn-secondary btn-large">
+          Explore Features
+        </a>
+      </div>
+      <p class="hero-trust"><strong>Trusted by enterprise teams</strong> and professionals worldwide</p>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-mockup">
+        <div class="mockup-screen">
+          <div class="mockup-header">
+            <div class="mockup-dots"></div>
+            <span>Interview Session</span>
+          </div>
+          <div class="mockup-content">
+            <div class="chat-bubble user">Tell me about yourself...</div>
+            <div class="chat-bubble ai">Great response! Your confidence score: 92%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section id="features" class="features-section">
+    <div class="section-header">
+      <h2>Our Features</h2>
+      <p>Everything you need to prepare effectively</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+        <h3>AI-Powered Analysis</h3>
+        <p>Get instant, actionable feedback on answers, tone, and structure.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Performance Tracking</h3>
+        <p>Monitor progress with professional analytics and tailored improvement plans.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-video"></i>
+        </div>
+        <h3>Video Sessions</h3>
+        <p>Record practice interviews and get visual feedback on presence and delivery.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h3>Expert Resources</h3>
+        <p>Guides, templates, and interview frameworks from industry experts.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Industry Scenarios</h3>
+        <p>Role-specific scenarios across industries to practice relevant questions.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>24/7 Availability</h3>
+        <p>Practice whenever suits you — instant feedback on demand.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="about-content">
+      <div class="about-text">
+        <h2>Why Choose Us</h2>
+        <p>Virtual Hire Coach combines advanced AI technology with proven interview strategies. Whether you're preparing for your first interview or a senior position, our platform provides the guidance you need to succeed.</p>
+        <div class="about-stats">
+          <div class="about-stat">
+            <h3>1M+</h3>
+            <p>Sessions completed</p>
+          </div>
+          <div class="about-stat">
+            <h3>86%</h3>
+            <p>Improvement rate</p>
+          </div>
+          <div class="about-stat">
+            <h3>50+</h3>
+            <p>Companies trusted</p>
+          </div>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="testimonial-card">
+          <h3>"This platform helped me ace my interview and land my dream role."</h3>
+          <p><strong>— Nilesh Steven, Software Engineer</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

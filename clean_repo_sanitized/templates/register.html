@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — Virtual Hire Coach</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-panel">
+      <div class="auth-header">
+        <a href="/" class="brand">
+          <i class="fas fa-brain"></i>
+          Virtual Hire Coach
+        </a>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light mode" type="button">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4V2M12 22v-2M4.93 4.93L3.51 3.51M20.49 20.49l-1.42-1.42M4 12H2M22 12h-2M4.93 19.07l-1.42 1.42M20.49 3.51l-1.42 1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <a href="{{ url_for('login') }}" class="auth-link">Sign in</a>
+        </div>
+      </div>
+
+      <div class="auth-welcome">
+        <h2>Join Virtual Hire Coach</h2>
+        <p class="lead">Start your journey to interview mastery</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="alerts">
+        {% for category, message in messages %}
+        <div class="alert {{ 'alert-error' if category == 'error' else 'alert-success' }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('register') }}" class="form">
+        <div class="input-group">
+          <label for="username">
+            <i class="fas fa-user"></i>
+            Full Name
+          </label>
+          <input id="username" name="username" type="text" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="input-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i>
+            Email Address
+          </label>
+          <input id="email" name="email" type="email" placeholder="Enter your email address" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">
+            <i class="fas fa-lock"></i>
+            Password
+          </label>
+          <input id="password" name="password" type="password" placeholder="Create a secure password" required minlength="6" />
+          <small class="input-hint">Must be at least 6 characters long</small>
+        </div>
+
+        <div class="terms-group">
+          <label class="checkbox">
+            <input type="checkbox" name="terms" required />
+            <span>I agree to the <a href="#" class="auth-link">Terms of Service</a> and <a href="#" class="auth-link">Privacy Policy</a></span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-user-plus"></i>
+          Create Account
+        </button>
+        <div class="auth-divider">
+          <span>or</span>
+        </div>
+        <p class="small">Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    (function() {
+      const themeToggle = document.getElementById('themeToggle');
+      const rootEl = document.documentElement;
+      const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const applyTheme = (mode) => {
+        rootEl.setAttribute('data-theme', mode);
+        document.body.classList.toggle('light-mode', mode === 'light');
+        document.body.classList.toggle('dark-mode', mode === 'dark');
+        themeToggle.title = mode === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+        localStorage.setItem('theme', mode);
+      };
+      themeToggle.addEventListener('click', () => applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light'));
+      applyTheme(savedTheme);
+    })();
+  </script>
+</body>
+</html>

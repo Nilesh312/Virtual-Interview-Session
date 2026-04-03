@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Virtual Interview Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Header - Premium -->
+    <nav class="nav-premium" style="position: sticky; top: 0; z-index: 100;">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-briefcase" style="font-size: 1.5rem; color: var(--primary-color); margin-right: var(--spacing-sm);"></i>
+                    <h3 style="margin: 0; color: var(--text-primary);">Virtual Interview</h3>
+                </div>
+                <div class="nav-actions">
+                    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                        <i class="fas fa-moon icon-dark"></i>
+                        <i class="fas fa-sun icon-light"></i>
+                    </button>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm btn-ghost">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="padding: var(--spacing-xl) 0;">
+        <!-- Welcome Section -->
+        <div class="text-center mb-4">
+            <h1 style="color: var(--text-primary); margin-bottom: var(--spacing-sm);">
+                <i class="fas fa-rocket" style="color: var(--primary-color); margin-right: var(--spacing-sm);"></i>
+                Welcome to Dashboard
+            </h1>
+            <p class="text-secondary" style="font-size: var(--font-size-lg); max-width: 600px; margin: 0 auto;">
+                Prepare for your virtual interview by uploading your resume and starting your personalized interview session.
+            </p>
+        </div>
+
+        <!-- Success Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'error' if category == 'error' else 'success' }} fade-in" style="max-width: 600px; margin: 0 auto var(--spacing-xl);">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Search Bar -->
+        <div class="search-container" style="margin-bottom: var(--spacing-3xl);">
+            <input type="text" class="search-input" placeholder="Search interviews, documents, or tips..." id="searchInput">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <!-- Quick Actions Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: var(--spacing-xl); margin-bottom: var(--spacing-3xl); width: 100%; max-width: 100%;">
+            <div class="card" style="text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: var(--primary-gradient); width: 80px; height: 80px; border-radius: 0 0 0 50%;"></div>
+                <div class="card-body">
+                    <i class="fas fa-play-circle" style="font-size: 3rem; color: var(--primary-color); margin-bottom: var(--spacing-lg);"></i>
+                    <h3 style="margin-bottom: var(--spacing-md);">Start Interview</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Begin a personalized interview session with AI-powered questions and real-time feedback.</p>
+                    <a href="{{ url_for('interview') }}" class="btn btn-primary btn-lg" style="width: 100%; padding: 1rem 1.5rem; font-size: var(--font-size-base); font-weight: 600; min-height: 55px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-play"></i>
+                        Start Now
+                    </a>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: var(--secondary-gradient); width: 80px; height: 80px; border-radius: 0 0 0 50%;"></div>
+                <div class="card-body">
+                    <i class="fas fa-file-upload" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: var(--spacing-lg);"></i>
+                    <h3 style="margin-bottom: var(--spacing-md);">Upload Resume / Certificate</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Upload your resume or certificates for AI analysis and personalized interview preparation.</p>
+                    <form class="upload-form" id="uploadForm" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" style="margin: 0;">
+                        <div style="margin-bottom: var(--spacing-sm); display:flex; gap:var(--spacing-md);">
+                            <button type="button" class="btn btn-outline btn-sm choose-type active" data-type="resume" id="chooseResumeBtn">Choose Resume</button>
+                            <button type="button" class="btn btn-outline btn-sm choose-type" data-type="certificate" id="chooseCertBtn">Choose Certificate</button>
+                            <input type="hidden" name="doc_type" id="docTypeInput" value="resume">
+                        </div>
+                        <input type="file" id="fileInput" name="document" style="display: none;" accept=".pdf,.docx,.txt">
+                        <div id="fileDisplay" style="margin-bottom: var(--spacing-md); padding: var(--spacing-sm); background: var(--bg-secondary); border-radius: var(--radius-md); display: none;">
+                            <i class="fas fa-file" style="margin-right: var(--spacing-sm); color: var(--secondary-color);"></i>
+                            <span id="fileName" style="color: var(--text-primary); font-weight: 500;"></span>
+                        </div>
+                        <button type="button" id="chooseFileBtn" class="btn btn-secondary btn-lg" style="width: 100%; margin-bottom: var(--spacing-sm); padding: 1rem 1.5rem; min-height: 55px; display: flex; align-items: center; justify-content: center; font-size: var(--font-size-base);">
+                            <i class="fas fa-upload"></i>
+                            Choose File
+                        </button>
+                        <div id="directFileInput" style="display: none; margin-bottom: var(--spacing-sm);">
+                            <input type="file" id="directFileInputField" name="document" accept=".pdf,.docx,.txt" class="form-control" style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary);">
+                        </div>
+                        <button type="button" id="toggleDirectInput" class="btn btn-outline btn-sm" style="width: 100%; margin-bottom: var(--spacing-sm); font-size: var(--font-size-sm);">
+                            <i class="fas fa-exchange-alt"></i>
+                            Having trouble? Try direct input
+                        </button>
+                        <button type="submit" id="uploadSubmitBtn" class="btn btn-primary btn-lg" style="width: 100%; padding: 1rem 1.5rem; min-height: 55px; display: none; align-items: center; justify-content: center; font-size: var(--font-size-base);">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Upload Resume
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="progressCard" class="card clickable-card" style="text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; right: 0; background: var(--accent-gradient); width: 80px; height: 80px; border-radius: 0 0 0 50%;"></div>
+                <div class="card-body">
+                    <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--accent-color); margin-bottom: var(--spacing-lg);"></i>
+                    <h3 style="margin-bottom: var(--spacing-md);">View Progress</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Track your interview performance, view detailed analytics, and get improvement recommendations.</p>
+                    <a href="{{ url_for('progress') }}" class="btn btn-accent btn-lg" style="width: 100%;">
+                        <i class="fas fa-chart-bar"></i>
+                        View Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <i class="fas fa-history" style="color: var(--primary-color);"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                        <div style="width: 40px; height: 40px; background: var(--primary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: var(--font-size-base); color: var(--text-primary);">Interview Session Completed</h4>
+                            <p style="margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary);">2 hours ago • Score: 8.5/10</p>
+                        </div>
+                        <span style="background: var(--secondary-color); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: 600;">Completed</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                        <div style="width: 40px; height: 40px; background: var(--secondary-gradient); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: var(--font-size-base); color: var(--text-primary);">Resume Analysis Complete</h4>
+                            <p style="margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary);">1 day ago • 95% match rate</p>
+                        </div>
+                        <span style="background: var(--primary-color); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: 600;">Analyzed</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0; font-size: var(--font-size-base); color: var(--text-primary);">Achievement Unlocked</h4>
+                            <p style="margin: 0; font-size: var(--font-size-sm); color: var(--text-secondary);">Completed 5 interview sessions • 3 days ago</p>
+                        </div>
+                        <span style="background: #f59e0b; color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: 600;">Achievement</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const uploadForm = document.getElementById('uploadForm');
+            const fileInput = document.getElementById('fileInput');
+            const directFileInput = document.getElementById('directFileInput');
+            const directFileInputField = document.getElementById('directFileInputField');
+            const chooseFileBtn = document.getElementById('chooseFileBtn');
+            const toggleDirectInput = document.getElementById('toggleDirectInput');
+            const uploadSubmitBtn = document.getElementById('uploadSubmitBtn');
+            const fileDisplay = document.getElementById('fileDisplay');
+            const fileName = document.getElementById('fileName');
+
+            let useDirectInput = false;
+
+            // Handle choose file button click
+            if (chooseFileBtn) {
+                chooseFileBtn.addEventListener('click', function() {
+                    if (useDirectInput) {
+                        directFileInputField.click();
+                    } else {
+                        try {
+                            fileInput.click();
+                        } catch (e) {
+                            console.warn('Hidden file input failed, switching to direct input');
+                            toggleToDirectInput();
+                            setTimeout(() => directFileInputField.click(), 100);
+                        }
+                    }
+                });
+            }
+
+            // Handle toggle to direct input
+            if (toggleDirectInput) {
+                toggleDirectInput.addEventListener('click', function() {
+                    if (useDirectInput) {
+                        toggleToHiddenInput();
+                    } else {
+                        toggleToDirectInput();
+                    }
+                });
+            }
+
+            function toggleToDirectInput() {
+                useDirectInput = true;
+                directFileInput.style.display = 'block';
+                chooseFileBtn.style.display = 'none';
+                toggleDirectInput.innerHTML = '<i class="fas fa-exchange-alt"></i> Switch to button input';
+                fileDisplay.style.display = 'none';
+                uploadSubmitBtn.style.display = 'none';
+            }
+
+            function toggleToHiddenInput() {
+                useDirectInput = false;
+                directFileInput.style.display = 'none';
+                chooseFileBtn.style.display = 'block';
+                toggleDirectInput.innerHTML = '<i class="fas fa-exchange-alt"></i> Having trouble? Try direct input';
+                fileDisplay.style.display = 'none';
+                uploadSubmitBtn.style.display = 'none';
+            }
+
+            // Handle hidden file input change
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    handleFileSelection(e.target.files[0]);
+                });
+            }
+
+            // Handle direct file input change
+            if (directFileInputField) {
+                directFileInputField.addEventListener('change', function(e) {
+                    handleFileSelection(e.target.files[0]);
+                });
+            }
+
+            function handleFileSelection(file) {
+                if (file) {
+                    // Validate file type
+                    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+                    const fileExtension = file.name.toLowerCase().split('.').pop();
+                    const allowedExtensions = ['pdf', 'docx', 'txt'];
+
+                    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                        alert('Please select a PDF, DOCX, or TXT file.');
+                        resetFileInputs();
+                        return;
+                    }
+
+                    // Validate file size (max 10MB)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('File size must be less than 10MB.');
+                        resetFileInputs();
+                        return;
+                    }
+
+                    // Show file name and upload button
+                    fileName.textContent = file.name;
+                    fileDisplay.style.display = 'block';
+                    uploadSubmitBtn.style.display = 'block';
+                    if (!useDirectInput) {
+                        chooseFileBtn.style.display = 'none';
+                    }
+                } else {
+                    resetFileInputs();
+                }
+            }
+
+            function resetFileInputs() {
+                fileInput.value = '';
+                if (directFileInputField) directFileInputField.value = '';
+                fileDisplay.style.display = 'none';
+                uploadSubmitBtn.style.display = 'none';
+                if (!useDirectInput) {
+                    chooseFileBtn.style.display = 'block';
+                }
+            }
+
+            // Handle form submission
+            if (uploadForm) {
+                uploadForm.addEventListener('submit', function(e) {
+                    let file;
+                    if (useDirectInput) {
+                        file = directFileInputField.files[0];
+                    } else {
+                        file = fileInput.files[0];
+                    }
+
+                    if (!file) {
+                        e.preventDefault();
+                        alert('Please select a file first.');
+                        return;
+                    }
+
+                    // Show uploading state
+                    uploadSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                    uploadSubmitBtn.disabled = true;
+
+                    // Re-enable button after 10 seconds (fallback)
+                    setTimeout(function() {
+                        // restore label according to selected type
+                        const sel = document.querySelector('input[name="doc_type"]:checked').value;
+                        uploadSubmitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload ' + (sel === 'certificate' ? 'Certificate' : 'Resume');
+                        uploadSubmitBtn.disabled = false;
+                    }, 10000);
+                });
+            }
+
+            // update upload button label when doc type changes
+            const docTypeInput = document.getElementById('docTypeInput');
+            function refreshUploadLabel() {
+                const sel = docTypeInput ? docTypeInput.value : 'resume';
+                if (uploadSubmitBtn) {
+                    uploadSubmitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload ' + (sel === 'certificate' ? 'Certificate' : 'Resume');
+                }
+            }
+            // handle type choose buttons (set type + trigger file chooser)
+            const chooseTypeButtons = document.querySelectorAll('.choose-type');
+            chooseTypeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = btn.getAttribute('data-type');
+                    if (docTypeInput) docTypeInput.value = type;
+                    chooseTypeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    refreshUploadLabel();
+                    // trigger file selection immediately for convenience
+                    if (useDirectInput) {
+                        if (directFileInputField) directFileInputField.click();
+                    } else {
+                        if (fileInput) fileInput.click();
+                    }
+                });
+            });
+            refreshUploadLabel();
+
+            // make entire progress card clickable (not just the button)
+            const prog = document.getElementById('progressCard');
+            if (prog) {
+                prog.addEventListener('click', function(e) {
+                    if (e.target.closest('a')) return; // let anchor itself handle
+                    window.location = "{{ url_for('progress') }}";
+                });
+            }
+        })();
+    </script>
+
+    <script>
+        // Theme toggle functionality
+        (function() {
+            var storageKey = 'virtual-interview-theme';
+            var toggle = document.getElementById('themeToggle');
+            var root = document.documentElement;
+
+            function getTheme() {
+                try {
+                    var stored = localStorage.getItem(storageKey);
+                    if (stored) return stored;
+                } catch (e) {}
+                return 'dark'; // Default to dark theme
+            }
+
+            function setTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                try { localStorage.setItem(storageKey, theme); } catch (e) {}
+                if (toggle) {
+                    toggle.setAttribute('aria-label', theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+                }
+            }
+
+            // Initialize theme
+            setTheme(getTheme());
+
+            // Toggle theme on button click
+            if (toggle) {
+                toggle.addEventListener('click', function() {
+                    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    setTheme(next);
+                });
+            }
+        })();
+    </script>
+
+    <style>
+        /* Upload form specific styles */
+        .form-control {
+            font-size: var(--font-size-base);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color var(--transition-normal);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .form-control::file-selector-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            margin-right: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-control::file-selector-button:hover {
+            background: var(--secondary-color-dark);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .card-body {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+</body>
+</html>
