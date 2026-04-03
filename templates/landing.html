@@ -17,21 +17,22 @@
     }
 
     :root{
-      --premium-100: #f3f6ff;
-      --premium-200: #eef2ff;
-      --premium-400: #9f7aea;
-      --premium-500: #7c3aed;
-      --premium-600: #6d28d9;
-      --premium-accent: linear-gradient(135deg,#7c3aed 0%, #06b6d4 100%);
-      --glass-bg: rgba(255,255,255,0.75);
-      --glass-border: rgba(255,255,255,0.6);
-      --muted-text: #666666;
+      --bg-dark-900: #061022;
+      --bg-dark-800: #0b2a45;
+      --accent-gold: #d4af37;
+      --accent-gold-600: #b38722;
+      --accent-gradient: linear-gradient(135deg, #d4af37 0%, #7c3aed 60%);
+      --glass-bg: rgba(255,255,255,0.03);
+      --card-bg: rgba(255,255,255,0.02);
+      --muted-text: rgba(230,238,246,0.78);
+      --card-border: rgba(255,255,255,0.04);
+      --panel-bg: rgba(255,255,255,0.02);
     }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background: radial-gradient(600px 400px at 10% 10%, rgba(124,58,237,0.08), transparent 10%), radial-gradient(500px 300px at 90% 90%, rgba(6,182,212,0.06), transparent 10%), linear-gradient(180deg, #fbfbff 0%, #f3f6ff 100%);
-      color: #111827;
+      background: radial-gradient(900px 500px at 10% 10%, rgba(212,175,55,0.045), transparent 12%), radial-gradient(600px 360px at 85% 80%, rgba(124,58,237,0.03), transparent 10%), linear-gradient(180deg, var(--bg-dark-900) 0%, var(--bg-dark-800) 100%);
+      color: rgba(230,238,246,0.98);
       line-height: 1.6;
       font-weight: 400;
       -webkit-font-smoothing:antialiased;
@@ -45,12 +46,13 @@
 
     /* Header Navigation */
     header {
-      background-color: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-      padding: 1.5rem 2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 1.25rem 2rem;
       position: sticky;
       top: 0;
       z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
     }
 
     .nav-inner {
@@ -62,9 +64,13 @@
     }
 
     .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #333333;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
     .logo i {
@@ -77,13 +83,14 @@
     }
 
     .nav-links a {
-      color: #666666;
-      font-weight: 500;
-      transition: color 0.3s ease;
+      color: rgba(230,238,246,0.88);
+      font-weight: 600;
+      transition: color 0.2s ease;
+      letter-spacing: 0.1px;
     }
 
     .nav-links a:hover {
-      color: #333333;
+      color: white;
     }
 
     .nav-actions {
@@ -93,14 +100,11 @@
     }
 
     .login-link {
-      color: #666666;
-      font-weight: 500;
-      transition: color 0.3s ease;
+      color: var(--muted-text);
+      font-weight: 600;
     }
 
-    .login-link:hover {
-      color: #333333;
-    }
+    .login-link:hover { color: white; }
 
     .btn {
       padding: 0.6rem 1.5rem;
@@ -115,21 +119,24 @@
     }
 
     .btn-primary {
-      background-color: #0066cc;
-      color: white;
+      background: var(--accent-gradient);
+      color: #071428;
+      box-shadow: 0 8px 22px rgba(115,58,196,0.12);
     }
 
     .btn-primary:hover {
-      background-color: #0052a3;
+      filter: brightness(0.98) saturate(1.05);
     }
 
     .btn-secondary {
-      background-color: #f0f0f0;
-      color: #333333;
+      background: transparent;
+      color: var(--muted-text);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .btn-secondary:hover {
-      background-color: #e5e5e5;
+      color: white;
+      border-color: rgba(255,255,255,0.12);
     }
 
     /* Hero Section */
@@ -141,33 +148,35 @@
       grid-template-columns: 1fr 1fr;
       gap: 3rem;
       align-items: center;
-      background: var(--glass-bg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius: 14px;
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 10px 40px rgba(2,6,23,0.5);
       backdrop-filter: blur(6px) saturate(120%);
     }
 
     .hero-content h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      color: #333333;
-      line-height: 1.2;
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: white;
+      line-height: 1.12;
+      letter-spacing: -0.3px;
+      text-shadow: 0 6px 30px rgba(7,20,34,0.6);
     }
 
     .hero-content > p {
-      font-size: 1.1rem;
-      color: #666666;
-      margin-bottom: 2rem;
+      font-size: 1.05rem;
+      color: rgba(230,238,246,0.88);
+      margin-bottom: 1.5rem;
       line-height: 1.7;
     }
 
+
     .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-      margin-bottom: 2rem;
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
     }
 
     .stat {
@@ -175,21 +184,31 @@
       flex-direction: column;
     }
 
+    .stat {
+      background: rgba(255,255,255,0.03);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.03);
+      min-width: 110px;
+      text-align: left;
+    }
+
     .stat strong {
-      font-size: 1.8rem;
-      color: #333333;
-      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: white;
+      display: block;
+      margin-bottom: 0.25rem;
     }
 
     .stat span {
-      font-size: 0.9rem;
-      color: #999999;
+      font-size: 0.85rem;
+      color: var(--muted-text);
     }
 
     .hero-ctas {
       display: flex;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     .btn-large {
@@ -199,23 +218,21 @@
 
     .hero-trust {
       font-size: 0.95rem;
-      color: #666666;
+      color: var(--muted-text);
     }
 
-    .hero-trust strong {
-      color: #333333;
-    }
+    .hero-trust strong { color: white; }
 
     .hero-visual {
-      background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
       padding: 1.5rem;
       border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.04);
+      border: 1px solid rgba(255,255,255,0.02);
       min-height: 380px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 20px 50px rgba(2,6,23,0.7);
     }
 
     .hero-mockup {
@@ -223,22 +240,22 @@
     }
 
     .mockup-screen {
-      background-color: white;
-      border: 1px solid #ddd;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 20px rgba(2,6,23,0.45);
       overflow: hidden;
     }
 
     .mockup-header {
-      background-color: #f5f5f5;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       padding: 1rem;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid rgba(255,255,255,0.02);
       display: flex;
       align-items: center;
       gap: 1rem;
-      font-weight: 500;
-      color: #666;
+      font-weight: 600;
+      color: rgba(230,238,246,0.86);
     }
 
     .mockup-dots {
@@ -275,14 +292,14 @@
     }
 
     .chat-bubble.user {
-      background-color: #f0f0f0;
-      color: #333;
+      background: rgba(255,255,255,0.04);
+      color: rgba(230,238,246,0.9);
       align-self: flex-end;
     }
 
     .chat-bubble.ai {
-      background-color: #e8f0ff;
-      color: #0066cc;
+      background: linear-gradient(90deg, rgba(124,58,237,0.06), rgba(6,182,212,0.04));
+      color: white;
       align-self: flex-start;
     }
 
@@ -291,10 +308,11 @@
       max-width: 1200px;
       margin: 3rem auto;
       padding: 3rem 2rem;
-      background: rgba(255,255,255,0.9);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(255,255,255,0.02);
+      box-shadow: 0 12px 40px rgba(2,6,23,0.5);
+      color: white;
     }
 
     .section-header {
@@ -306,12 +324,12 @@
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 1rem;
-      color: #333333;
+      color: white;
     }
 
     .section-header p {
       font-size: 1.05rem;
-      color: #666666;
+      color: var(--muted-text);
     }
 
     .features-grid {
@@ -322,10 +340,11 @@
 
     .feature-card {
       padding: 2rem;
-      background-color: #ffffff;
-      border: 1px solid #e5e5e5;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: 10px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      color: rgba(230,238,246,0.95);
     }
 
     .feature-card:hover {
@@ -334,19 +353,19 @@
     }
 
     .feature-icon {
-      font-size: 2rem;
-      color: #0066cc;
+      font-size: 1.8rem;
+      color: var(--accent-gold);
       margin-bottom: 1rem;
     }
 
     .feature-card h3 {
-      font-size: 1.25rem;
-      margin-bottom: 0.75rem;
-      color: #333333;
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      color: white;
     }
 
     .feature-card p {
-      color: #666666;
+      color: rgba(230,238,246,0.88);
       line-height: 1.7;
     }
 
@@ -355,10 +374,8 @@
       max-width: 1200px;
       margin: 3rem auto;
       padding: 3rem 2rem;
-      background: rgba(255,255,255,0.85);
+      background: transparent;
       border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.04);
     }
 
     .about-content {
@@ -371,12 +388,12 @@
     .about-text h2 {
       font-size: 2rem;
       margin-bottom: 1.5rem;
-      color: #333333;
+      color: white;
     }
 
     .about-text p {
       font-size: 1.05rem;
-      color: #666666;
+      color: var(--muted-text);
       margin-bottom: 2rem;
       line-height: 1.7;
     }
@@ -393,34 +410,35 @@
 
     .about-stat h3 {
       font-size: 1.8rem;
-      color: #333333;
+      color: white;
       margin-bottom: 0.5rem;
     }
 
     .about-stat p {
       font-size: 0.95rem;
-      color: #999999;
+      color: var(--muted-text);
       margin: 0;
     }
 
     .testimonial-card {
-      background-color: white;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       padding: 2rem;
-      border-radius: 8px;
-      border: 1px solid #e5e5e5;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 30px rgba(2,6,23,0.45);
+      color: rgba(230,238,246,0.95);
     }
 
     .testimonial-card h3 {
       font-size: 1.15rem;
       font-weight: 500;
       margin-bottom: 1rem;
-      color: #333333;
+      color: white;
       font-style: italic;
     }
 
     .testimonial-card p {
-      color: #666666;
+      color: rgba(230,238,246,0.95);
       font-size: 0.95rem;
     }
 
@@ -482,31 +500,31 @@
 
   <main class="landing-hero">
     <div class="hero-content">
-      <h1>Master Your Next Interview with AI Coaching</h1>
-      <p>Get personalized practice sessions, real-time feedback, and actionable insights to ace your next interview.</p>
+      <h1>Premium AI Coaching for Confident Interviews</h1>
+      <p>Deliver concise, confident answers. Practice with realistic scenarios, get AI-driven feedback, and improve measurable outcomes.</p>
       <div class="hero-stats">
         <div class="stat">
-          <strong>94%</strong>
-          <span>Success Rate</span>
-        </div>
-        <div class="stat">
           <strong>10K+</strong>
-          <span>Users</span>
+          <span>Active Users</span>
         </div>
         <div class="stat">
-          <strong>24/7</strong>
-          <span>Support</span>
+          <strong>1M+</strong>
+          <span>Sessions Completed</span>
+        </div>
+        <div class="stat">
+          <strong>94%</strong>
+          <span>Average Success Rate</span>
         </div>
       </div>
       <div class="hero-ctas">
         <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
-          Start Your Journey
+          Get Started — Free Trial
         </a>
         <a href="#features" class="btn btn-secondary btn-large">
-          Learn More
+          Explore Features
         </a>
       </div>
-      <p class="hero-trust">Trusted by professionals worldwide</p>
+      <p class="hero-trust"><strong>Trusted by enterprise teams</strong> and professionals worldwide</p>
     </div>
     <div class="hero-visual">
       <div class="hero-mockup">
@@ -535,42 +553,47 @@
           <i class="fas fa-brain"></i>
         </div>
         <h3>AI-Powered Analysis</h3>
-        <p>Get instant feedback on your answers, pacing, and content structure.</p>
+        <p>Get instant, actionable feedback on answers, tone, and structure.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-video"></i>
-        </div>
-        <h3>Video Sessions</h3>
-        <p>Practice with video recording and analysis of your interview performance.</p>
-      </div>
+
       <div class="feature-card">
         <div class="feature-icon">
           <i class="fas fa-chart-line"></i>
         </div>
         <h3>Performance Tracking</h3>
-        <p>Monitor your progress with detailed analytics and improvement recommendations.</p>
+        <p>Monitor progress with professional analytics and tailored improvement plans.</p>
       </div>
+
       <div class="feature-card">
         <div class="feature-icon">
-          <i class="fas fa-clock"></i>
+          <i class="fas fa-video"></i>
         </div>
-        <h3>24/7 Availability</h3>
-        <p>Practice anytime, anywhere. Get instant feedback at your convenience.</p>
+        <h3>Video Sessions</h3>
+        <p>Record practice interviews and get visual feedback on presence and delivery.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <h3>Industry Scenarios</h3>
-        <p>Role-specific practice scenarios across various industries and positions.</p>
-      </div>
+
       <div class="feature-card">
         <div class="feature-icon">
           <i class="fas fa-trophy"></i>
         </div>
         <h3>Expert Resources</h3>
-        <p>Access guides, tips, and best practices from experienced professionals.</p>
+        <p>Guides, templates, and interview frameworks from industry experts.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Industry Scenarios</h3>
+        <p>Role-specific scenarios across industries to practice relevant questions.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>24/7 Availability</h3>
+        <p>Practice whenever suits you — instant feedback on demand.</p>
       </div>
     </div>
   </section>

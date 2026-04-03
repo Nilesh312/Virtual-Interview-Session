@@ -83,9 +83,10 @@
                     <h3 style="margin-bottom: var(--spacing-md);">Upload Resume / Certificate</h3>
                     <p style="color: var(--text-secondary); margin-bottom: var(--spacing-xl);">Upload your resume or certificates for AI analysis and personalized interview preparation.</p>
                     <form class="upload-form" id="uploadForm" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" style="margin: 0;">
-                        <div style="margin-bottom: var(--spacing-sm);">
-                            <label><input type="radio" name="doc_type" value="resume" checked> Resume</label>
-                            <label style="margin-left: var(--spacing-md);"><input type="radio" name="doc_type" value="certificate"> Certificate</label>
+                        <div style="margin-bottom: var(--spacing-sm); display:flex; gap:var(--spacing-md);">
+                            <button type="button" class="btn btn-outline btn-sm choose-type active" data-type="resume" id="chooseResumeBtn">Choose Resume</button>
+                            <button type="button" class="btn btn-outline btn-sm choose-type" data-type="certificate" id="chooseCertBtn">Choose Certificate</button>
+                            <input type="hidden" name="doc_type" id="docTypeInput" value="resume">
                         </div>
                         <input type="file" id="fileInput" name="document" style="display: none;" accept=".pdf,.docx,.txt">
                         <div id="fileDisplay" style="margin-bottom: var(--spacing-md); padding: var(--spacing-sm); background: var(--bg-secondary); border-radius: var(--radius-md); display: none;">
@@ -319,14 +320,30 @@
             }
 
             // update upload button label when doc type changes
-            const typeRadios = document.querySelectorAll('input[name="doc_type"]');
+            const docTypeInput = document.getElementById('docTypeInput');
             function refreshUploadLabel() {
-                const sel = document.querySelector('input[name="doc_type"]:checked').value;
+                const sel = docTypeInput ? docTypeInput.value : 'resume';
                 if (uploadSubmitBtn) {
                     uploadSubmitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload ' + (sel === 'certificate' ? 'Certificate' : 'Resume');
                 }
             }
-            typeRadios.forEach(r => r.addEventListener('change', refreshUploadLabel));
+            // handle type choose buttons (set type + trigger file chooser)
+            const chooseTypeButtons = document.querySelectorAll('.choose-type');
+            chooseTypeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = btn.getAttribute('data-type');
+                    if (docTypeInput) docTypeInput.value = type;
+                    chooseTypeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    refreshUploadLabel();
+                    // trigger file selection immediately for convenience
+                    if (useDirectInput) {
+                        if (directFileInputField) directFileInputField.click();
+                    } else {
+                        if (fileInput) fileInput.click();
+                    }
+                });
+            });
             refreshUploadLabel();
 
             // make entire progress card clickable (not just the button)
