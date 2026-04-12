@@ -90,6 +90,13 @@ body::before {
   font-size: 1.8rem;
 }
 
+.brand img {
+  height: 36px;
+  width: auto;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
 .auth-link {
   font-size: 0.95rem;
   color: var(--muted);

@@ -833,6 +833,15 @@ body {
     font-size: 1.6rem;
 }
 
+.logo img,
+.nav-brand img,
+.nav-logo img {
+    height: 36px;
+    width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
 .nav-links {
     display: flex;
     align-items: center;
