@@ -33,7 +33,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = env_values.get("SECRET_KEY") or os.getenv(
     "SECRET_KEY", "virtual_hire_secret_development"
 )
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("postgresql://", "postgresql+pg8000://")
+db_url = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
+if db_url and db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+pg8000://")
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['UPLOAD_FOLDER'] = "uploads"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 db = SQLAlchemy(app)
