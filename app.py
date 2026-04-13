@@ -38,7 +38,8 @@ if db_url and db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+pg8000://")
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['UPLOAD_FOLDER'] = "uploads"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 if not os.path.exists("uploads"):
